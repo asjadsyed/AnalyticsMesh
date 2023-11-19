@@ -1,0 +1,12 @@
+version: "3.8"
+
+name: analytics-mesh
+
+services:
+  hyperloglog-crdt:
+    image: hyperloglog-crdt:latest
+    build: .
+    network_mode: "host"
+    volumes:
+      - .:/opt/hyperloglog-crdt/data/
+    init: true
