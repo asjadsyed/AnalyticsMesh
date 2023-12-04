@@ -1,10 +1,11 @@
 FROM ubuntu:22.04 AS thrift_build
-WORKDIR /opt/hyperloglog-crdt/code/src/
+WORKDIR /opt/hyperloglog-crdt/code/
 RUN apt-get update && apt-get install -y --no-install-recommends \
     make \
     thrift-compiler \
     && rm -rf /var/lib/apt/lists/*
-COPY ./src/*.thrift ./src/Makefile ./
+COPY ./Makefile ./
+COPY ./src/*.thrift ./src/
 RUN make
 
 FROM python:3.12.0

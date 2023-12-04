@@ -17,7 +17,7 @@ import thrift.transport.TSocket
 import thrift.transport.TTransport
 import thrift.protocol.TBinaryProtocol
 
-from gen_py.hyperloglog_crdt import HyperLogLogCRDT
+from gen.py.hyperloglog_crdt import HyperLogLogCRDT
 import thrift_helper
 
 ANTI_ENTROPY_INTERVAL = 1

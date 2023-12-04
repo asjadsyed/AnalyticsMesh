@@ -1,6 +1,6 @@
 # Apache Thrift
 gen-*/
-gen_py/
+gen/
 
 # https://github.com/github/gitignore/blob/main/Python.gitignore
 
