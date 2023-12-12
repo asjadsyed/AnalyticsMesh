@@ -7,7 +7,7 @@ import random
 from typing import Optional, Tuple
 import os
 
-from hyperloglog_crdt_handler import DurabilityLevel, HyperLogLogCRDTHandler
+from analytics_mesh import AnalyticsMesh, DurabilityLevel
 
 LOG_LEVELS = ["notset", "debug", "info", "warning", "error", "critical"]
 LOGGER: logging.Logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def configure_logger(log_level: Optional[str]) -> None:
 def main(args: argparse.Namespace) -> None:
     configure_logger(args.log_level)
 
-    with HyperLogLogCRDTHandler(
+    with AnalyticsMesh(
         args.enable_server,
         args.enable_client,
         args.server_address,
@@ -39,25 +39,25 @@ def main(args: argparse.Namespace) -> None:
         args.sketch_file,
         args.durability_level,
         args.atomicity,
-    ) as hyperloglog_crdt_handler:
+    ) as am:
         # Cardinality estimation of machines which have interacted with the application.
-        # hyperloglog_crdt_handler.update_sketch(uuid.getnode())
+        # am.update_sketch(uuid.getnode())
 
         # Cardinality estimation of processes which have interacted with the application.
-        # hyperloglog_crdt_handler.update_sketch(f"{uuid.getnode()} | {os.getpid()} | {psutil.Process().create_time()}")
+        # am.update_sketch(f"{uuid.getnode()} | {os.getpid()} | {psutil.Process().create_time()}")
 
         # Cardinality estimation of distributed real-time streaming data from external sources.
         for line in sys.stdin:
             line = line.rstrip("\n")
-            hyperloglog_crdt_handler.update_sketch(line)
+            am.update_sketch(line)
             LOGGER.debug(
                 "The set has ~%r elements",
-                hyperloglog_crdt_handler.sketch.get_estimate(),
+                am.sketch.get_estimate(),
             )
 
         # Cardinality estimation of distributed real-time streaming data from internal application sources.
         while True:
-            hyperloglog_crdt_handler.update_sketch(random.random())
+            am.update_sketch(random.random())
 
 
 def parse_address(address_str: str) -> Tuple[str, int]:
@@ -102,7 +102,7 @@ def validate_sketch_file(sketch_file: str) -> str:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="HyperLogLog CRDT")
+    parser = argparse.ArgumentParser(description="AnalyticsMesh")
     parser.add_argument(
         "--sketch-file",
         default=None,

@@ -17,7 +17,7 @@ import thrift.transport.TSocket
 import thrift.transport.TTransport
 import thrift.protocol.TBinaryProtocol
 
-from gen.py.hyperloglog_crdt import HyperLogLogCRDT
+from gen.py.anti_entropy import AntiEntropy
 import thrift_helper
 
 ANTI_ENTROPY_INTERVAL = 1
@@ -34,7 +34,7 @@ class DurabilityLevel(enum.StrEnum):
     VOLATILE = enum.auto()
 
 
-class HyperLogLogCRDTHandler(HyperLogLogCRDT.Iface):
+class AnalyticsMesh(AntiEntropy.Iface):
     def __init__(
         self,
         enable_server: bool,
@@ -283,7 +283,7 @@ class HyperLogLogCRDTHandler(HyperLogLogCRDT.Iface):
     def server_work(self, address: Tuple[str, int]) -> None:
         host, port = address
         handler = self
-        processor = HyperLogLogCRDT.Processor(handler)
+        processor = AntiEntropy.Processor(handler)
         transport = thrift.transport.TSocket.TServerSocket(host=host, port=port)
         pfactory = thrift.protocol.TBinaryProtocol.TBinaryProtocolFactory()
         self.server = thrift.server.TNonblockingServer.TNonblockingServer(
@@ -361,7 +361,7 @@ class HyperLogLogCRDTHandler(HyperLogLogCRDT.Iface):
         client = thrift_helper.ThriftHelper(
             host,
             port,
-            HyperLogLogCRDT.Client,
+            AntiEntropy.Client,
             reliable=False,
             timeout=ANTI_ENTROPY_TIMEOUT,
         )
